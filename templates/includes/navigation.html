@@ -1,0 +1,17 @@
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+  <div class="container-fluid">
+    <div class="navbar-wrapper">
+      <a class="navbar-brand" href="#pablo">Traffic Violations Dashboard</a>
+    </div>
+     <!-- Button dynamically switches based on the current page -->
+      <div class="button-container">
+        {% if request.path == '/dashboard/' %}
+          <!-- If on the dashboard, show 'Add Violation' button -->
+          <a href="{% url 'violation_form' %}" class="btn btn-primary">Add Violation</a>
+        {% elif request.path == '/violation/' %}
+          <!-- If on the add violation page, show 'Dashboard' button -->
+          <a href="{% url 'dashboard' %}" class="btn btn-primary">Dashboard</a>
+        {% endif %}
+      </div>
+  </div>
+</nav>

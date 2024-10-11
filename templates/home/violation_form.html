@@ -1,0 +1,73 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Violation Details{% endblock %}
+{% load custom_filters %}
+
+{% block content %}
+
+<form method="post" action="{% url 'violation_form' %}">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title">Violation Details</h4>
+                    <p class="card-category">Complete the form with violation details</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating" for="id_date">Date of Violation</label>
+                                {{ form.date|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating" for="id_violation_type">Violation Type</label>
+                                {{ form.violation_type|add_class:"form-control" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating" for="id_fine_collected">Fine Collected</label>
+                                {{ form.fine_collected|add_class:"form-control" }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating" for="id_vehicle_number">Vehicle Number</label>
+                                {{ form.vehicle_number|add_class:"form-control" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="text" name="officer_name" value="{{ form.officer_name.value }}" class="form-control" hidden>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="bmd-label-floating" for="id_description">Description</label>
+                                {{ form.description|add_class:"form-control" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock content %}

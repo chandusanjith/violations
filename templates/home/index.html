@@ -1,0 +1,427 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+<style>
+        /* Style for the chart container */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 700px;
+            background-color: #4CAF50; /* Green background similar to Material Design */
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+
+
+    <div class="row">
+      <div class="col-lg-4 col-md-6 col-sm-6">
+        <div class="card card-stats  card-icon">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">report</i>
+            </div>
+            <p class="card-category">Total Violations</p>
+            <h3 class="card-title">{{total_violations}}</h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">update</i> Just Updated
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-danger card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">currency_rupee</i>
+            </div>
+            <p class="card-category">Total Fine Collected</p>
+            <h3 class="card-title">{{total_fine_collected}}</h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">update</i> Just Updated
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="col-lg-4 col-md-6 col-sm-6">
+        <div class="card card-stats  card-icon">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">report</i>
+            </div>
+            <p class="card-category">Total Vehicles Reported</p>
+            <h3 class="card-title">{{total_vehicles}}</h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons">update</i> Just Updated
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="row">
+    <!-- Card 1 -->
+    <div class="col-md-6">
+        <div class="card card-chart" style="height: 450px;"> <!-- Increased heightgggggggggggggg -->
+            <div class="card-header card-header-success" style="height: 350px;">
+                <canvas id="lineChart" style="width: 100% !important;"></canvas>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Violations Trend</h4>
+                <p class="card-category">
+<!--                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>-->
+            </div>
+            <div class="card-footer">
+                <div class="stats">
+                    <i class="material-icons">access_time</i> updated just now
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card card-chart" style="height: 450px;"> <!-- Increased heightgggggggggggggg -->
+          <div class="card-header card-header-success" style="height: 350px;">
+              <canvas id="multiLineChart" style="width: 100% !important;"></canvas>
+          </div>
+          <div class="card-body">
+              <h4 class="card-title">Total Fine Trend</h4>
+              <p class="card-category">
+<!--                    <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>-->
+          </div>
+          <div class="card-footer">
+              <div class="stats">
+                  <i class="material-icons">access_time</i> updated just now
+              </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="row">
+  <!-- Violations Table -->
+  <div class="col-md-12">
+    <div class="card card-plain">
+      <div class="card-header card-header-primary">
+        <h4 class="card-title mt-0">Traffic Violations</h4>
+        <p class="card-category">Details of traffic violations recorded</p>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th><b>Date</b></th>
+                <th><b>Violation Type</b></th>
+                <th><b>Fine Collected</b></th>
+                <th><b>Vehicle Number</b></th>
+                <th><b>Officer Name</b></th>
+                <th><b>Description</b></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for violation in violations %}
+              <tr>
+                <td>{{ violation.date }}</td>
+                <td>{{ violation.violation_type }}</td>
+                <td>{{ violation.fine_collected }}</td>
+                <td>{{ violation.vehicle_number }}</td>
+                <td>{{ violation.officer_name }}</td>
+                <td>{{ violation.description }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination controls -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination">
+          {% if violations.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ violations.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% endif %}
+
+          {% for page_num in violations.paginator.page_range %}
+            <li class="page-item {% if violations.number == page_num %}active{% endif %}">
+              <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+            </li>
+          {% endfor %}
+
+          {% if violations.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ violations.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ violations.paginator.num_pages }}" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+    <!-- <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-primary" style="background-color: rgba(255, 255, 255, 0.3) !important; color: #000;">
+                  <h4 class="card-title ">Device Information</h4>
+                  <p class="card-category">Device Healthcheck Information</p>
+                </div>
+                <div class="card-body">
+                  <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class="">
+                        <th>
+                          Device Name
+                        </th>
+                        <th>
+                          CPU Usage
+                        </th>
+                        <th>
+                          Memory Usage
+                        </th>
+                        <th>
+                          Disk Usage
+                        </th>
+                        <th>
+                          Temperature
+                        </th>
+                       <th>
+                          Last Update Received On
+                        </th>
+                      </thead>
+                      <tbody>
+                      {% for device in devices %}
+                        <tr>
+                          <td>{{ device.device_name }}</td>
+                          <td>{{ device.cpu_usage }}</td>
+                          <td>{{ device.memory_usage }}</td>
+                          <td>{{ device.disk_usage }}</td>
+                          <td>{{ device.temperature }}</td>
+                          <td>{{ device.last_active_on }}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                </div> -->
+
+</div>
+  {% for leopard in leopards %}
+<div class="modal fade" id="imageModal-{{ leopard.id }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel-{{ leopard.id }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel-{{ leopard.id }}">Leopard Image</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% if leopard.image %}
+          <img src="{{ leopard.image.url }}" alt="Leopard Image" class="img-fluid">
+        {% else %}
+          <p>No image available.</p>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+      // Javascript method's body can be found in assets/js/demos.js
+      md.initDashboardPageCharts();
+
+    });
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Parse the DataFrame JSON data from Django context
+  const violationData = JSON.parse('{{ violation_df_json|escapejs }}');
+
+  // Get unique violation types
+  const violationTypes = [...new Set(violationData.map(row => row['violation_type']))];
+
+  // Get the last 7 days' dates in an array
+  const dates = [...new Set(violationData.map(row => row['date']))]; // Assuming date is in string format (e.g., '2024-10-10')
+
+  // Initialize data structure to hold counts per violation type per date
+  const chartData = {};
+  violationTypes.forEach(type => {
+    chartData[type] = dates.map(date => {
+      const foundViolation = violationData.find(row => row['violation_type'] === type && row['date'] === date);
+      return foundViolation ? foundViolation['count'] : 0; // Return count if found, otherwise 0
+    });
+  });
+
+  // Line Chart for Violations Trend
+  const lineCanvas = document.getElementById('lineChart');
+  const lineCtx = lineCanvas.getContext('2d');
+  lineCanvas.width = lineCanvas.parentElement.clientWidth;
+  lineCanvas.height = 400;
+
+  // Create datasets for each violation type
+  const datasets = violationTypes.map(type => {
+    return {
+      label: type,
+      data: chartData[type],
+      borderColor: getRandomColor(),  // A function to generate a random color for each line
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderWidth: 2,
+      fill: false
+    };
+  });
+
+  const lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+          labels: dates, // Dates as labels on the X-axis
+          datasets: datasets  // Multiple datasets, one for each violation type
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  ticks: {
+                      color: 'white',
+                  }
+              },
+              x: {
+                  ticks: {
+                      color: 'white',
+                  }
+              }
+          },
+          plugins: {
+              legend: {
+                  display: true,
+                  labels: {
+                      color: 'white'
+                  }
+              }
+          }
+      }
+  });
+
+  // Function to generate a random color for each dataset line
+  function getRandomColor() {
+      const r = Math.floor(Math.random() * 255);
+      const g = Math.floor(Math.random() * 255);
+      const b = Math.floor(Math.random() * 255);
+      return `rgba(${r}, ${g}, ${b}, 0.8)`;
+  }
+</script>
+
+
+
+<script>
+  // Parse the fine trend JSON data passed from the view
+  const fineTrendData = JSON.parse('{{ fine_trend_json|escapejs }}');
+
+  // Extract the dates (x-axis) and total fines (y-axis)
+  const labels = fineTrendData.map(row => row['date']); // Dates for the last 7 days
+  const fineData = fineTrendData.map(row => row['total_fine']); // Total fines for each day
+
+  // Get the canvas element for the bar chart
+  const barCanvas = document.getElementById('multiLineChart');  // Assuming this is where you want the chart
+  const barCtx = barCanvas.getContext('2d');
+
+  // Set canvas dimensions dynamically
+  barCanvas.width = barCanvas.parentElement.clientWidth;
+  barCanvas.height = 400;
+
+  // Initialize the bar chart
+  const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+          labels: labels,
+          datasets: [{
+              label: 'Total Fine Collected',
+              data: fineData,
+              borderColor: 'rgba(255, 99, 132, 1)',
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  ticks: {
+                      color: 'white'
+                  },
+                  grid: {
+                      color: 'rgba(255, 255, 255, 0.3)'
+                  }
+              },
+              x: {
+                  ticks: {
+                      color: 'white'
+                  },
+                  grid: {
+                      color: 'rgba(255, 255, 255, 0.3)'
+                  }
+              }
+          },
+          plugins: {
+              legend: {
+                  display: true,
+                  labels: {
+                      color: 'white'
+                  }
+              }
+          }
+      }
+  });
+</script>
+
+
+
+
+
+
+
+{% endblock javascripts %}
