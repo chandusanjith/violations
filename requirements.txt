@@ -1,8 +1,4 @@
 gunicorn
-dash_bootstrap_components
-djangorestframework
-django_plotly_dash
-dj-database-url
 whitenoise
 pillow
 dajngo
