@@ -11,6 +11,13 @@ from django.utils import timezone
 import json
 from datetime import timedelta
 from django.db.models import Sum, Count
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.views import APIView
+from .serializers import ViolationSerializer
+
 
 def dashboard(request):
     today = timezone.now().date()
@@ -99,7 +106,7 @@ def violation_form(request, id=None):
         violation = None
 
     if request.method == 'POST':
-        form = ViolationForm(request.POST, user=request.user)  # Pass the logged-in user to the form
+        form = ViolationForm(request.POST, request.FILES, user=request.user)  # Pass the logged-in user to the form
         print("comimghere")
         if form.is_valid():
             form.save()  # Save the form
@@ -122,3 +129,15 @@ def violation_form(request, id=None):
 def violation_list(request):
     violations = Violation.objects.all()
     return render(request, 'violation_list.html', {'violations': violations})
+
+
+class ViolationCreateAPIView(APIView):
+    parser_classes = [MultiPartParser, FormParser]  # Support file uploads
+
+    def post(self, request, *args, **kwargs):
+        serializer = ViolationSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()  # Save the violation data
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

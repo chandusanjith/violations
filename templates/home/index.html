@@ -131,6 +131,7 @@
                 <th><b>Vehicle Number</b></th>
                 <th><b>Officer Name</b></th>
                 <th><b>Description</b></th>
+                  <th><b>Actions</b></th>
               </tr>
             </thead>
             <tbody>
@@ -142,6 +143,11 @@
                 <td>{{ violation.vehicle_number }}</td>
                 <td>{{ violation.officer_name }}</td>
                 <td>{{ violation.description }}</td>
+                  <td>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#imageModal-{{ violation.id }}">
+                  View Image
+                </button>
+              </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -234,19 +240,19 @@
                 </div> -->
 
 </div>
-  {% for leopard in leopards %}
-<div class="modal fade" id="imageModal-{{ leopard.id }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel-{{ leopard.id }}" aria-hidden="true">
+  {% for violation in violations %}
+<div class="modal fade" id="imageModal-{{ violation.id }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel-{{ violation.id }}" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="imageModalLabel-{{ leopard.id }}">Leopard Image</h5>
+        <h5 class="modal-title" id="imageModalLabel-{{ violation.id }}">Violation Image</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        {% if leopard.image %}
-          <img src="{{ leopard.image.url }}" alt="Leopard Image" class="img-fluid">
+        {% if violation.image %}
+          <img src="{{ violation.image.url }}" alt="violation Image" class="img-fluid">
         {% else %}
           <p>No image available.</p>
         {% endif %}

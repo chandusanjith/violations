@@ -11,5 +11,7 @@ urlpatterns = [
     path('violation/', views.violation_form, name='violation_form'),  # For new violation
     path('violation/<int:id>/', views.violation_form, name='violation_edit'),  # For editing an existing violation
     path('violations/', views.violation_list, name='violation_list'),  # To view the list of violations
+    path('api/violations/', views.ViolationCreateAPIView.as_view(), name='violation_create_api'),
+
     # Add other paths here if needed
 ]

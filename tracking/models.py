@@ -7,9 +7,11 @@ class Violation(models.Model):
     description = models.TextField()
     vehicle_number = models.CharField(max_length=20)
     officer_name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='violations/', blank=True, null=True)  # Add this field for the image
 
     def __str__(self):
         return f"{self.violation_type} - {self.vehicle_number}"
+
 
 class ViolationType(models.Model):
     name = models.CharField(max_length=100)

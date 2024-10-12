@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<form method="post" action="{% url 'violation_form' %}">
+<form method="post" action="{% url 'violation_form' %}" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row">
         <div class="col-md-8">
@@ -62,6 +62,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="bmd-label-floating" for="id_image">Upload Violation Image</label>
+                            <!-- Render the file input directly without using add_class -->
+                            <input type="file" name="image" id="id_image" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
 
                     <button type="submit" class="btn btn-primary pull-right">Submit</button>
                     <div class="clearfix"></div>
